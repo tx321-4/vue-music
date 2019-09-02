@@ -43,3 +43,11 @@ yarn add stylus stylus-loader
   },
 ```
 ## https://icomoon.io/ 图标制作网站
+
+## eslint
+```bash
+    # 文件末尾强制换行(就是代码结尾处,要来个空格,相当于加一行,设置为0就可以了) 
+    'eol-last': 0,
+    # 格式化函数时，函数名称或function关键字与开始参数之间允许有空格
+    'space-before-function-paren': 0
+```

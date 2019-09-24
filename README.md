@@ -26,6 +26,7 @@ For a detailed explanation on how things work, check out the [guide](http://vuej
 * babel-runtime    ES 语法转义
 * fastclick  解决移动端点击 300ms 延迟
 * babel-polyfill  ES6 API转义
+* jsonp  跨域读取数据
 
 安装 `stylus `、`stylus-loader`
 ```bash

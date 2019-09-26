@@ -1,6 +1,7 @@
 # vue-music
 
 >  Vue 音乐App
+## [原文转载：http://ustbhuangyi.com/music/](http://ustbhuangyi.com/music/)
 
 ## Build Setup
 

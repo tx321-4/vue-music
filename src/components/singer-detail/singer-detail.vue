@@ -6,26 +6,59 @@
 
 <script type="text/ecmascript-6">
 import {getSingerDetail} from 'api/singer';
+import {getMusic} from 'api/song';
 import {ERR_OK} from 'api/config';
 import {mapGetters} from 'vuex';
+import {createSong} from 'common/js/song';
 
 export default {
+  data () {
+    return {
+      songs: []
+    };
+  },
   computed: {
     ...mapGetters([
       'singer'
     ])
   },
-  cteated () {
+  created () {
     this._getDetail();
   },
   methods: {
     _getDetail () {
-      console.log('123');
+      if (!this.singer.id) {
+        this.$router.push('/singer');
+        return;
+      }
       getSingerDetail(this.singer.id).then((res) => {
         if (res.code === ERR_OK) {
-          console.log(res.data.list);
+          this.songs = this._normalizeSongs(res.data.list);
+          console.log(this.songs);
         }
       });
+    },
+    _normalizeSongs (list) {
+      let ret = [];
+      list.forEach((item) => {
+        let {musicData} = item;
+        if (musicData.songid && musicData.albummid) {
+          // ret.push(createSong(musicData));
+          getMusic(musicData.songmid).then((res) => {
+            if (res.code === ERR_OK) {
+              // console.log(res)
+              const svkey = res.data.items;
+              // console.log(svkey[0])
+              const songVkey = svkey[0].vkey;
+              // console.log(songVkey);
+              const newSong = createSong(musicData, songVkey);
+              // console.log('newSong',newSong)
+              ret.push(newSong);
+            }
+          });
+        }
+      });
+      return ret;
     }
   }
 };

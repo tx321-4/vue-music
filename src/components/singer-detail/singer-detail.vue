@@ -43,16 +43,10 @@ export default {
       list.forEach((item) => {
         let {musicData} = item;
         if (musicData.songid && musicData.albummid) {
-          // ret.push(createSong(musicData));
           getMusic(musicData.songmid).then((res) => {
             if (res.code === ERR_OK) {
-              // console.log(res)
-              const svkey = res.data.items;
-              // console.log(svkey[0])
-              const songVkey = svkey[0].vkey;
-              // console.log(songVkey);
+              const songVkey = res.req_0.data.midurlinfo.vkey;
               const newSong = createSong(musicData, songVkey);
-              // console.log('newSong',newSong)
               ret.push(newSong);
             }
           });

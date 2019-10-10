@@ -40,6 +40,7 @@ export default {
       }
       getSingerDetail(this.singer.id).then((res) => {
         if (res.code === ERR_OK) {
+          // console.log(res.data.list);
           this.songs = this._normalizeSongs(res.data.list);
           console.log(this.songs);
         }
@@ -52,9 +53,12 @@ export default {
         if (musicData.songid && musicData.albummid) {
           getMusic(musicData.songmid).then((res) => {
             if (res.code === ERR_OK) {
-              const songVkey = res.req_0.data.midurlinfo.vkey;
-              const newSong = createSong(musicData, songVkey);
-              ret.push(newSong);
+              const songVkey = res.req_0.data.midurlinfo[0].vkey;
+              if (songVkey) {
+                // console.log(songVkey);
+                const newSong = createSong(musicData, songVkey);
+                ret.push(newSong);
+              }
             }
           });
         }

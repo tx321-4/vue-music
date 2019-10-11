@@ -20,7 +20,7 @@ export function createSong (musicData, songVkey) {
     album: musicData.albumname,
     duration: musicData.interval,
     image: `https://y.gtimg.cn/music/photo_new/T002R300x300M000${musicData.albummid}.jpg?max_age=2592000`,
-    url: `http://114.80.26.156/amobile.music.tc.qq.com/C400${musicData.strMediaMid}.m4a?guid=908480640&vkey=${songVkey}&uin=0&fromtag=66`
+    url: `http://114.80.26.156/amobile.music.tc.qq.com/C400${musicData.songmid}.m4a?guid=908480640&vkey=${songVkey}&uin=0&fromtag=66`
   });
 }
 function filterSinger (singer) {

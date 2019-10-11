@@ -5,8 +5,7 @@
 </template>
 
 <script type="text/ecmascript-6">
-import {getSingerDetail} from 'api/singer';
-import {getMusic} from 'api/song';
+import {getSingerDetail, getMusic} from 'api/singer';
 import {ERR_OK} from 'api/config';
 import {mapGetters} from 'vuex';
 import {createSong} from 'common/js/song';
@@ -53,7 +52,8 @@ export default {
         if (musicData.songid && musicData.albummid) {
           getMusic(musicData.songmid).then((res) => {
             if (res.code === ERR_OK) {
-              const songVkey = res.req_0.data.midurlinfo[0].vkey;
+              // const songVkey = res.req_0.data.midurlinfo[0].vkey; // QQ音乐自己的
+              const songVkey = res.data.items[0].vkey; // github 上面找的
               if (songVkey) {
                 // console.log(songVkey);
                 const newSong = createSong(musicData, songVkey);

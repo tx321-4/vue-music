@@ -68,11 +68,12 @@ const devWebpackConfig = merge(baseWebpackConfig, {
         })
       });
       app.get('/api/music', function(req, res) {
-        const url = 'https://u.y.qq.com/cgi-bin/musicu.fcg';
+        // const url = 'https://u.y.qq.com/cgi-bin/musicu.fcg'; QQ音乐自己的
+        const url = 'https://c.y.qq.com/base/fcgi-bin/fcg_music_express_mobile3.fcg';  // github 上面找的
         axios.get(url,{
           headers: {
-            referer: 'https://u.y.qq.com/',
-            host: 'u.y.qq.com'
+            referer: 'https://y.qq.com/',
+            host: 'c.y.qq.com'
           },
           params: req.query
         }).then((response)=>{

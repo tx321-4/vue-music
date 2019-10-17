@@ -31,6 +31,7 @@ For a detailed explanation on how things work, check out the [guide](http://vuej
 * better-scroll 解决移动端各种滚动场景需求的插件
 * axios 是一个基于 promise 的 HTTP 库
 * vue-Lazyload 图片懒加载的插件
+* js-base64 第三方库 base64 解码
 
 安装 `stylus `、`stylus-loader`
 ```bash

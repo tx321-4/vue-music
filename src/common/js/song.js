@@ -43,6 +43,20 @@ export function createSong (musicData, songVkey) {
     url: `http://ws.stream.qqmusic.qq.com/C400${musicData.songmid}.m4a?guid=908480640&vkey=${songVkey}&uin=0&fromtag=66`
   });
 }
+export function createSongDisc (musicData, songVkey) {
+  return new Song({
+    id: musicData.id,
+    mid: musicData.mid,
+    singer: filterSinger(musicData.singer),
+    name: musicData.name,
+    album: musicData.album.name,
+    duration: musicData.interval,
+    image: `https://y.gtimg.cn/music/photo_new/T002R300x300M000${musicData.album.mid}.jpg?max_age=2592000`,
+    // url: `http://114.80.26.156/amobile.music.tc.qq.com/C400${musicData.songmid}.m4a?guid=908480640&vkey=${songVkey}&uin=0&fromtag=66` //歌曲播放主动暂停
+    url: `http://ws.stream.qqmusic.qq.com/C400${musicData.mid}.m4a?guid=908480640&vkey=${songVkey}&uin=0&fromtag=66`
+  });
+}
+
 function filterSinger (singer) {
   let ret = [];
   if (!singer) {

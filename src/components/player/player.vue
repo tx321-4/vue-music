@@ -30,7 +30,7 @@
           </div>
         </div>
         <div class="playing-lyric-wrapper">
-          <div class="playing-lyric"></div>
+          <div class="playing-lyric">{{playingLyric}}</div>
         </div>
       </div>
       <scroll class="middle-r" ref="lyricList" :data="currentLyric && currentLyric.lines">
@@ -120,7 +120,8 @@ export default {
       radius: 32,
       currentLyric: null,
       currentLineNum: 0,
-      currentShow: 'cd'
+      currentShow: 'cd',
+      playingLyric: ''
     };
   },
   computed: {
@@ -205,6 +206,9 @@ export default {
         return;
       }
       this.setPlayingState(!this.playing);
+      if (this.currentLyric) {
+        this.currentLyric.togglePlay();
+      }
     },
     end () {
       if (this.mode === playMode.loop) {
@@ -216,18 +220,25 @@ export default {
     loop () {
       this.$refs.audio.currentTime = 0;
       this.$refs.audio.play();
+      if (this.currentLyric) {
+        this.currentLyric.seek();
+      }
     },
     next () {
       if (!this.songReady) {
         return;
       }
-      let index = this.currentIndex + 1;
-      if (index === this.playlist.length) {
-        index = 0;
-      }
-      this.setCurrentIndex(index);
-      if (!this.playing) {
-        this.togglePlaying();
+      if (this.playlist.length === 1) {
+        this.loop();
+      } else {
+        let index = this.currentIndex + 1;
+        if (index === this.playlist.length) {
+          index = 0;
+        }
+        this.setCurrentIndex(index);
+        if (!this.playing) {
+          this.togglePlaying();
+        }
       }
       this.songReady = false;
     },
@@ -235,13 +246,17 @@ export default {
       if (!this.songReady) {
         return;
       }
-      let index = this.currentIndex - 1;
-      if (index === -1) {
-        index = this.playlist.length - 1;
-      }
-      this.setCurrentIndex(index);
-      if (!this.playing) {
-        this.togglePlaying();
+      if (this.playlist.length === 1) {
+        this.loop();
+      } else {
+        let index = this.currentIndex - 1;
+        if (index === -1) {
+          index = this.playlist.length - 1;
+        }
+        this.setCurrentIndex(index);
+        if (!this.playing) {
+          this.togglePlaying();
+        }
       }
       this.songReady = false;
     },
@@ -266,6 +281,9 @@ export default {
       this.$refs.audio.currentTime = currentTime;
       if (!this.playing) {
         this.togglePlaying();
+      }
+      if (this.currentLyric) {
+        this.currentLyric.seek(currentTime * 1000);
       }
     },
     _getPosAndScale () {
@@ -307,7 +325,11 @@ export default {
         if (this.playing) {
           this.currentLyric.play();
         }
-        console.log(this.currentLyric);
+        // console.log(this.currentLyric);
+      }).catch(() => {
+        this.currentLyric = null;
+        this.playingLyric = '';
+        this.currentLineNum = 0;
       });
     },
     handleLyric ({lineNum, txt}) {
@@ -318,6 +340,7 @@ export default {
       } else {
         this.$refs.lyricList.scrollTo(0, 0, 1000);
       }
+      this.playingLyric = txt;
     },
     middleTouchStart (e) {
       this.touch.initiated = true; // 初始化标志位
@@ -396,10 +419,13 @@ export default {
       if (newSong.id === oldSong.id) {
         return;
       }
-      this.$nextTick(() => {
+      if (this.currentLyric) {
+        this.currentLyric.stop();// 切换歌曲后，清空前一首歌歌词Layric实例中的定时器
+      }
+      setTimeout(() => {
         this.$refs.audio.play();
         this.getLyric();
-      });
+      }, 1000);
     },
     playing (newPlaying) {
       this.$nextTick(() => {

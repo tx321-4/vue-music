@@ -1,5 +1,11 @@
 <template>
-<div class="suggest">
+<scroll class="suggest"
+        :data="result"
+        :pullup="pullup"
+        :beforeScroll = "beforeScroll"
+        @beforeScroll = "listScroll"
+        @scrollToEnd="searchMore"
+        ref="suggest" >
   <ul class="suggest-list">
     <li class="suggest-item" v-for="(item, index) in result" :key='index'>
       <div class="icon">
@@ -9,8 +15,9 @@
         <p class="text" v-html="getDisplayName(item)"></p>
       </div>
     </li>
+    <loading v-show="hasMore" ></loading>
   </ul>
-</div>
+</scroll>
 </template>
 
 <script type="text/ecmascript-6">
@@ -18,10 +25,17 @@ import {getSearch} from 'api/search';
 import {ERR_OK} from 'api/config';
 import {getMusic} from 'api/singer';
 import {createSong} from 'common/js/song';
+import Scroll from 'base/scroll/scroll';
+import Loading from 'base/loading/loading';
+
 const TYPE_SINGER = 'singer';
 const perpage = 20; // 抓取数据一页有多少数据
 
 export default {
+  components: {
+    Scroll,
+    Loading
+  },
   props: {
     query: {
       type: String,
@@ -37,18 +51,39 @@ export default {
       page: 1,
       result: [],
       zhida: {},
-      searchSongs: {} // result 副本
+      searchSongs: {}, // result 副本
+      pullup: true,
+      beforeScroll: true,
+      hasMore: true, // 上拉加载标志位
+      firstList: {} //  第一次搜索到的歌曲
 
     };
   },
   methods: {
     search () {
       this.page = 1;
+      // this.$refs.suggest.scrollTo(0, 0); // scroll位置重置到顶部
+      this.hasMore = true;
       getSearch(this.query, this.page, this.showSinger, perpage).then((res) => {
         if (res.code === ERR_OK) {
           this.zhida = res.data.zhida;
+          this.firstList = res.data.song.list; // 记录第一次加载后获得的数据
           this.searchSongs = this._normalizeSongs(res.data.song.list);
           // this.result = this._getResult(res.data);
+          this._checkMore(res.data.song);
+        }
+      });
+    },
+    searchMore () {
+      if (!this.hasMore) {
+        return;
+      }
+
+      this.page++;
+      getSearch(this.query, this.page, this.showSinger, perpage).then((res) => {
+        if (res.code === ERR_OK) {
+          this.searchSongs = this._normalizeSongs(this.firstList.concat(res.data.song.list));
+          this._checkMore(res.data.song);
         }
       });
     },
@@ -65,6 +100,12 @@ export default {
       } else {
         return `${item.name}-${item.singer}`;
       }
+    },
+    refresh () {
+      this.$refs.suggest.refresh();
+    },
+    listScroll () {
+      this.$emit('listScroll');
     },
     // _getResult (data) {
     //   let ret = [];
@@ -91,6 +132,11 @@ export default {
       this.result = ret;
       console.log(this.result);
     },
+    _checkMore (data) {
+      if (!data.list.length || (data.curnum + data.curpage * perpage) >= data.totalnum) {
+        this.hasMore = false;
+      }
+    },
     _normalizeSongs (list) {
       let ret = [];
       let pushIndex = 0; // 标志位 判断是否是最后一次push
@@ -100,7 +146,6 @@ export default {
           getMusic(musicData.songmid).then((res) => {
             if (res.code === ERR_OK) {
               const songVkey = res.data.items[0].vkey;
-
               if (songVkey) {
                 const newSong = createSong(musicData, songVkey);
                 ret.push(newSong);

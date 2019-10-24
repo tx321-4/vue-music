@@ -24,6 +24,20 @@ export default {
     listenScroll: {
       type: Boolean,
       default: false
+    },
+    // 上拉刷新
+    pullup: {
+      type: Boolean,
+      default: false
+    },
+    // 是否派发beforeScroll事件
+    beforeScroll: {
+      type: Boolean,
+      default: false
+    },
+    refreshDelay: {
+      type: Number,
+      default: 20
     }
   },
   mounted () {
@@ -35,7 +49,8 @@ export default {
     _initScroll () {
       if (!this.$refs.wrapper) {
         return;
-      } this.scroll = new BScroll(this.$refs.wrapper, {
+      };
+      this.scroll = new BScroll(this.$refs.wrapper, {
         probeType: this.probeType,
         click: this.click
       });
@@ -43,6 +58,19 @@ export default {
         let me = this;
         this.scroll.on('scroll', (pos) => {
           me.$emit('scroll', pos);
+        });
+      };
+      if (this.pullup) {
+        this.scroll.on('scrollEnd', () => {
+          // 当滚动距离小于等于最大的滚动条的距离 + 50 的时候，向外传递一个scrollToEnd的事件
+          if (this.scroll.y <= (this.scroll.maxScrollY + 50)) {
+            this.$emit('scrollToEnd');
+          }
+        });
+      }
+      if (this.beforeScroll) {
+        this.scroll.on('beforeScrollStart', () => {
+          this.$emit('beforeScroll');
         });
       }
     },
@@ -67,7 +95,7 @@ export default {
     data () {
       setTimeout(() => {
         this.refresh();
-      }, 20);
+      }, this.refreshDelay);
     }
   }
 };

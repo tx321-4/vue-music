@@ -7,7 +7,7 @@
         @scrollToEnd="searchMore"
         ref="suggest" >
   <ul class="suggest-list">
-    <li class="suggest-item" v-for="(item, index) in result" :key='index'>
+    <li @click="selectItem(item)" class="suggest-item" v-for="(item, index) in result" :key='index'>
       <div class="icon">
         <i :class="getIconCls(item)"></i>
       </div>
@@ -17,6 +17,9 @@
     </li>
     <loading v-show="hasMore" ></loading>
   </ul>
+  <div v-show="!hasMore && !result.length" class="no-result-wrapper">
+    <no-result title="抱歉，暂无搜索结果"></no-result>
+  </div>
 </scroll>
 </template>
 
@@ -27,6 +30,9 @@ import {getMusic} from 'api/singer';
 import {createSong} from 'common/js/song';
 import Scroll from 'base/scroll/scroll';
 import Loading from 'base/loading/loading';
+import Singer from 'common/js/singer';
+import {mapMutations, mapActions} from 'vuex';
+import NoResult from 'base/no-result/no-result';
 
 const TYPE_SINGER = 'singer';
 const perpage = 20; // 抓取数据一页有多少数据
@@ -34,7 +40,8 @@ const perpage = 20; // 抓取数据一页有多少数据
 export default {
   components: {
     Scroll,
-    Loading
+    Loading,
+    NoResult
   },
   props: {
     query: {
@@ -130,7 +137,23 @@ export default {
         ret = ret.concat(newValue);
       }
       this.result = ret;
-      console.log(this.result);
+      // console.log(this.result);
+    },
+    selectItem (item) {
+      if (item.type === TYPE_SINGER) {
+        console.log('123');
+        const singer = new Singer({
+          id: item.singermid,
+          name: item.singername
+        });
+        this.$router.push({
+          path: `/search/${singer.id}`
+        });
+        this.setSinger(singer);
+      } else {
+        this.insertSong(item);
+      }
+      this.$emit('select');
     },
     _checkMore (data) {
       if (!data.list.length || (data.curnum + data.curpage * perpage) >= data.totalnum) {
@@ -162,15 +185,22 @@ export default {
         }
       });
       return ret;
-    }
+    },
+    ...mapMutations({
+      setSinger: 'SET_SINGER'
+    }),
+    ...mapActions([
+      'insertSong'
+    ])
   },
+
   watch: {
     query () {
       this.search();
     },
     // 监听异步问题，对数据无法操作，把值赋值出来
     searchSongs (newValue) {
-      console.log(this.pushOver);
+      // console.log(this.pushOver);
       // 判断异步完成后去合并已存在的数组和singer
       if (this.pushOver) {
         this._getResult(this.zhida, newValue);

@@ -32,6 +32,7 @@ For a detailed explanation on how things work, check out the [guide](http://vuej
 * axios 是一个基于 promise 的 HTTP 库
 * vue-Lazyload 图片懒加载的插件
 * js-base64 第三方库 base64 解码
+* good-storage 第三库 搜索历史本地存储
 
 安装 `stylus `、`stylus-loader`
 ```bash

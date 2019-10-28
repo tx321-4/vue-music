@@ -11,12 +11,10 @@ const SEARCH_MAX_LENGTH = 15; // 搜索历史最多存入数组15个
 function insertArray (arr, val, compare, maxLen) {
   const index = arr.findIndex(compare); // 判断是否以前有搜索过， compare在外部编写
   if (index === 0) { // 上一条搜索历史就是这个，就不需要添加历史
-    console.log('1');
     return;
   }
   if (index > 0) {
     arr.splice(index, 1);
-    console.log('2');
   }
   arr.unshift(val); // 没有历史记录， 添加项目到第一项
   if (maxLen && arr.length > maxLen) { // 大于最大数量的时候，删除最后一项

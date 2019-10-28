@@ -141,7 +141,6 @@ export default {
     },
     selectItem (item) {
       if (item.type === TYPE_SINGER) {
-        console.log('123');
         const singer = new Singer({
           id: item.singermid,
           name: item.singername

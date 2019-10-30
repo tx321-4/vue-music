@@ -7,6 +7,10 @@ import VueLazyLoad from 'vue-lazyload';
 import store from './store';
 import 'common/stylus/index.styl';
 
+// import Vconsole from 'vconsole';
+// const vConsole = new Vconsole();
+// Vue.use(vConsole);
+
 Vue.config.productionTip = false;
 
 fastclick.attach(document.body);

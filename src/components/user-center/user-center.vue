@@ -23,7 +23,7 @@
         </div>
       </scroll>
     </div>
-    <div class="no-result-wrapper" v-show="noResult">
+    <div class="no-result-wrapper" v-if="noResult">
       <no-result :title="noResultDesc"></no-result>
     </div>
   </div>

@@ -23,7 +23,7 @@
         </div>
       </scroll>
     </div>
-    <div class="no-result-wrapper" v-if="noResult">
+    <div class="no-result-wrapper" v-show="noResult">
       <no-result :title="noResultDesc"></no-result>
     </div>
   </div>
@@ -54,7 +54,7 @@ export default {
       if (this.currentIndex === 0) {
         return !this.favoriteList.length;
       } else {
-        return !this.favoriteList.length;
+        return !this.playHistory.length;
       }
     },
     noResultDesc () {
